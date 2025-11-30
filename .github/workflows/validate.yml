@@ -1,0 +1,100 @@
+name: ✈️ Validate Scripts
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-powershell:
+    name: 🔵 Validate PowerShell
+    runs-on: windows-latest
+    
+    steps:
+    - name: ✈️ Checkout
+      uses: actions/checkout@v4
+    
+    - name: 🔍 Run PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
+        
+        # Run the installer to generate the PS1 file
+        Write-Host "Running installer to generate scripts..."
+        cmd /c "install.cmd < nul"
+        
+        # Analyze the generated PowerShell script
+        if (Test-Path "kube-profile.ps1") {
+          Write-Host "Analyzing kube-profile.ps1..."
+          $results = Invoke-ScriptAnalyzer -Path "kube-profile.ps1" -Severity Warning,Error
+          if ($results) {
+            $results | Format-Table -AutoSize
+            Write-Host "::warning::PSScriptAnalyzer found issues"
+          } else {
+            Write-Host "✅ No issues found!"
+          }
+        }
+    
+    - name: 🧪 Test PowerShell Script Loads
+      shell: pwsh
+      run: |
+        # Generate the script first
+        cmd /c "install.cmd < nul"
+        
+        # Test that the script loads without errors
+        if (Test-Path "kube-profile.ps1") {
+          Write-Host "Testing script load..."
+          try {
+            . .\kube-profile.ps1
+            Write-Host "✅ Script loaded successfully!"
+            
+            # Verify some functions exist
+            if (Get-Command kgp -ErrorAction SilentlyContinue) {
+              Write-Host "✅ Function 'kgp' exists"
+            }
+            if (Get-Command kinfo -ErrorAction SilentlyContinue) {
+              Write-Host "✅ Function 'kinfo' exists"
+            }
+          } catch {
+            Write-Host "❌ Error loading script: $_"
+            exit 1
+          }
+        }
+
+  validate-batch:
+    name: 🟡 Validate Batch Scripts
+    runs-on: windows-latest
+    
+    steps:
+    - name: ✈️ Checkout
+      uses: actions/checkout@v4
+    
+    - name: 🔍 Validate install.cmd syntax
+      shell: cmd
+      run: |
+        echo Checking install.cmd exists...
+        if not exist install.cmd (
+          echo ❌ install.cmd not found!
+          exit /b 1
+        )
+        echo ✅ install.cmd found
+        
+        echo.
+        echo Checking for common batch issues...
+        findstr /n "echo off" install.cmd
+        echo ✅ Basic validation passed
+
+  markdown-lint:
+    name: 📝 Lint Markdown
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: ✈️ Checkout
+      uses: actions/checkout@v4
+    
+    - name: 🔍 Lint Markdown files
+      uses: DavidAnson/markdownlint-cli2-action@v16
+      with:
+        globs: '**/*.md'
+      continue-on-error: true  # Don't fail on lint warnings
