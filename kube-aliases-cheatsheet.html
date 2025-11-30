@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Aliases Cheat Sheet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+        }
+        
+        @media print {
+            .header {
+                color: #326ce5;
+                background: none;
+                border: 3px solid #326ce5;
+            }
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        @media print {
+            .header h1 {
+                text-shadow: none;
+            }
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .helm-wheel {
+            font-size: 4em;
+            display: inline-block;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @media print {
+            .helm-wheel {
+                animation: none;
+            }
+        }
+        
+        /* Fun quote */
+        .fun-quote {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            border-left: 5px solid #326ce5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .fun-quote .emoji {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+        
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        @media print {
+            .card {
+                box-shadow: none;
+                border: 2px solid #ddd;
+                break-inside: avoid;
+            }
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #326ce5;
+        }
+        
+        .card-subtitle {
+            font-size: 0.8em;
+            color: #888;
+        }
+        
+        /* Alias table */
+        .alias-table {
+            width: 100%;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+        
+        .alias-row {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .alias-row:last-child {
+            border-bottom: none;
+        }
+        
+        .alias-cmd {
+            width: 80px;
+            font-weight: 600;
+            color: #e91e63;
+        }
+        
+        .alias-desc {
+            flex: 1;
+            color: #333;
+        }
+        
+        /* Fun badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-hot {
+            background: #ff5722;
+            color: white;
+        }
+        
+        .badge-new {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: white;
+        }
+        
+        @media print {
+            .footer {
+                color: #666;
+            }
+        }
+        
+        .footer-joke {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .k8s-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        /* Meme section */
+        .meme-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .meme-box {
+            display: inline-block;
+            background: #1a1a2e;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+        
+        .meme-box .title {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Pro tips */
+        .pro-tips {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        @media print {
+            .pro-tips {
+                background: #f5f5f5;
+            }
+        }
+        
+        .pro-tips h3 {
+            color: #326ce5;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .tip {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .tip:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tip-icon {
+            margin-right: 8px;
+        }
+        
+        /* ASCII Art Section */
+        .ascii-section {
+            font-family: 'Fira Code', monospace;
+            background: #1a1a2e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.7em;
+            line-height: 1.2;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="helm-wheel">⎈</div>
+            <h1>Kubernetes Aliases Cheat Sheet</h1>
+            <p class="subtitle">Because life's too short to type <code>kubectl get pods --all-namespaces</code></p>
+        </div>
+        
+        <!-- Fun Quote -->
+        <div class="fun-quote">
+            <span class="emoji">🚀</span>
+            "I used to have a life, then I started managing Kubernetes clusters..."
+            <span class="emoji">☸️</span>
+        </div>
+        
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            <!-- Core & Verbs -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⚡</span>
+                    <div>
+                        <div class="card-title">Core & Verbs</div>
+                        <div class="card-subtitle">The basics that'll save your sanity</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">k</span>
+                        <span class="alias-desc">kubectl <span class="badge badge-hot">MVP</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kg</span>
+                        <span class="alias-desc">kubectl get</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kd</span>
+                        <span class="alias-desc">kubectl describe</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">ke</span>
+                        <span class="alias-desc">kubectl edit</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">ka</span>
+                        <span class="alias-desc">kubectl apply</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kc</span>
+                        <span class="alias-desc">kubectl create</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">krm</span>
+                        <span class="alias-desc">kubectl delete <span class="badge badge-danger">⚠️</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kl</span>
+                        <span class="alias-desc">kubectl logs</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kx</span>
+                        <span class="alias-desc">kubectl exec</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resources -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📦</span>
+                    <div>
+                        <div class="card-title">Resources</div>
+                        <div class="card-subtitle">Get all the things!</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgp</span>
+                        <span class="alias-desc">get pods <span class="badge badge-hot">🔥</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgd</span>
+                        <span class="alias-desc">get deployments</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgs</span>
+                        <span class="alias-desc">get services</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgn</span>
+                        <span class="alias-desc">get nodes</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgi</span>
+                        <span class="alias-desc">get ingress</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kga</span>
+                        <span class="alias-desc">get all</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgpa</span>
+                        <span class="alias-desc">get pods --all-namespaces</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgaa</span>
+                        <span class="alias-desc">get all --all-namespaces</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Watch & Logs -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">👀</span>
+                    <div>
+                        <div class="card-title">Watch & Logs</div>
+                        <div class="card-subtitle">Stare at pods like they're Netflix</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgpw</span>
+                        <span class="alias-desc">get pods -w (watch)</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgdw</span>
+                        <span class="alias-desc">get deployments -w</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">klo</span>
+                        <span class="alias-desc">logs -f (follow) <span class="badge badge-hot">🔥</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kexec</span>
+                        <span class="alias-desc">exec -it</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kpf</span>
+                        <span class="alias-desc">port-forward</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Describe Helpers -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔍</span>
+                    <div>
+                        <div class="card-title">Describe Helpers</div>
+                        <div class="card-subtitle">When "it's not working" isn't helpful</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdp</span>
+                        <span class="alias-desc">describe pod</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdd</span>
+                        <span class="alias-desc">describe deployment</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kds</span>
+                        <span class="alias-desc">describe service</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdsec</span>
+                        <span class="alias-desc">describe secret</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdcm</span>
+                        <span class="alias-desc">describe configmap</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Output Formats -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📄</span>
+                    <div>
+                        <div class="card-title">Output Formats</div>
+                        <div class="card-subtitle">YAML: Yet Another Markup Langua- *cries*</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgy</span>
+                        <span class="alias-desc">get -o yaml</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgj</span>
+                        <span class="alias-desc">get -o json</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgw</span>
+                        <span class="alias-desc">get -o wide</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secrets & ConfigMaps -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔐</span>
+                    <div>
+                        <div class="card-title">Secrets & ConfigMaps</div>
+                        <div class="card-subtitle">Base64 is NOT encryption, folks</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgsec</span>
+                        <span class="alias-desc">get secrets</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgcm</span>
+                        <span class="alias-desc">get configmaps</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Operations -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📁</span>
+                    <div>
+                        <div class="card-title">File Operations</div>
+                        <div class="card-subtitle">Apply all the YAMLs!</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kaf</span>
+                        <span class="alias-desc">apply -f <span class="badge badge-hot">🔥</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdf</span>
+                        <span class="alias-desc">delete -f <span class="badge badge-danger">⚠️</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rollout & Scale -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔄</span>
+                    <div>
+                        <div class="card-title">Rollout & Scale</div>
+                        <div class="card-subtitle">Scale to infinity... and your cloud bill</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">krollout</span>
+                        <span class="alias-desc">rollout status</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">krestart</span>
+                        <span class="alias-desc">rollout restart</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kscale</span>
+                        <span class="alias-desc">scale</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node Operations -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🖥️</span>
+                    <div>
+                        <div class="card-title">Node Operations</div>
+                        <div class="card-subtitle">Treat your nodes like cattle, not pets</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kdrain</span>
+                        <span class="alias-desc">drain <span class="badge badge-danger">⚠️</span></span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kunc</span>
+                        <span class="alias-desc">uncordon</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kcord</span>
+                        <span class="alias-desc">cordon</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metrics -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <div>
+                        <div class="card-title">Metrics & Events</div>
+                        <div class="card-subtitle">Who's eating all the CPU?</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">ktop</span>
+                        <span class="alias-desc">top pods</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">ktopn</span>
+                        <span class="alias-desc">top nodes</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kev</span>
+                        <span class="alias-desc">get events (sorted)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Context & Namespace -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎯</span>
+                    <div>
+                        <div class="card-title">Context & Namespace</div>
+                        <div class="card-subtitle">Don't deploy to prod... again</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kx</span>
+                        <span class="alias-desc">switch context (kubectx)</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kn</span>
+                        <span class="alias-desc">switch namespace (kubens)</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kinfo</span>
+                        <span class="alias-desc">show current context info</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CRDs & API -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧩</span>
+                    <div>
+                        <div class="card-title">CRDs & API</div>
+                        <div class="card-subtitle">Extending K8s like it's Lego</div>
+                    </div>
+                </div>
+                <div class="alias-table">
+                    <div class="alias-row">
+                        <span class="alias-cmd">kgc</span>
+                        <span class="alias-desc">get crd</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kap</span>
+                        <span class="alias-desc">api-resources</span>
+                    </div>
+                    <div class="alias-row">
+                        <span class="alias-cmd">kav</span>
+                        <span class="alias-desc">api-versions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Meme Section -->
+        <div class="meme-section">
+            <h3 style="color: #326ce5; margin-bottom: 15px;">⎈ K8s Dev Lifecycle ⎈</h3>
+            <div class="meme-box">
+                <div class="title">Monday:</div>
+                kgp → 0/1 CrashLoopBackOff 😱
+            </div>
+            <div class="meme-box">
+                <div class="title">Tuesday:</div>
+                kdp my-pod → ImagePullBackOff 🤦
+            </div>
+            <div class="meme-box">
+                <div class="title">Wednesday:</div>
+                kev → FailedScheduling: 0/3 nodes 💀
+            </div>
+            <div class="meme-box">
+                <div class="title">Thursday:</div>
+                klo my-pod → "it works on my machine" 🤷
+            </div>
+            <div class="meme-box">
+                <div class="title">Friday:</div>
+                krm -f . --force 🔥🔥🔥
+            </div>
+        </div>
+        
+        <!-- PowerShell Functions -->
+        <div class="pro-tips">
+            <h3>🎩 PowerShell-Only Magic Functions</h3>
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>klogs &lt;pod&gt; [container]</strong> - Tail logs with optional container name
+            </div>
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>kxpod &lt;prefix&gt; [shell]</strong> - Exec into pod by name prefix (fuzzy match!)
+            </div>
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>kinfo</strong> - Display current context, namespace & cluster URL
+            </div>
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>kh</strong> - Show help (you're looking at the fancy version!)
+            </div>
+        </div>
+        
+        <!-- ASCII Art -->
+        <div class="ascii-section">
+     ___________________
+    |  _____________    |
+    | |  kgp        |   |   "Have you tried turning
+    | |  NAME  READY|   |    the pod off and on again?"
+    | |  app   1/1  |   |
+    | |_____________|   |        - Every K8s Admin Ever
+    |___________________|
+       _[_________]_
+      /   \     /   \
+     |_____|   |_____|
+        </div>
+        
+        <!-- Pro Tips -->
+        <div class="pro-tips" style="margin-top: 20px;">
+            <h3>🏆 Pro Tips for Survival</h3>
+            <div class="tip">
+                <span class="tip-icon">1️⃣</span>
+                Always run <strong>kinfo</strong> before doing anything destructive. Trust no one, not even yourself.
+            </div>
+            <div class="tip">
+                <span class="tip-icon">2️⃣</span>
+                Chain commands: <code>kgp | grep -i error</code> to find the troubled souls
+            </div>
+            <div class="tip">
+                <span class="tip-icon">3️⃣</span>
+                Use <code>kgpw</code> when deploying - it's like watching paint dry, but more stressful
+            </div>
+            <div class="tip">
+                <span class="tip-icon">4️⃣</span>
+                <code>kev</code> is your best friend when debugging. Events don't lie (usually).
+            </div>
+            <div class="tip">
+                <span class="tip-icon">5️⃣</span>
+                Remember: <code>krm</code> in prod is a career-limiting move. Double-check that context! 😅
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="k8s-logo">
+                <span style="font-size: 2em;">⎈</span>
+            </div>
+            <div class="footer-joke">
+                "There are only two hard problems in computer science:<br>
+                cache invalidation, naming things, and off-by-one errors in Kubernetes replica counts."
+            </div>
+            <p style="margin-top: 15px; opacity: 0.8;">
+                Generated with 💙 | Type <strong>kh</strong> in terminal for quick reference<br>
+                <small>Install: D:\DevTools\kube-aliases</small>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Print Button -->
+    <div class="no-print" style="text-align: center; margin: 30px 0;">
+        <button onclick="window.print()" style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        ">
+            🖨️ Print This Cheat Sheet!
+        </button>
+    </div>
+</body>
+</html>
