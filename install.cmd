@@ -486,7 +486,7 @@ REM --- Step 4: Configure PowerShell profile ---
 echo [4/5] Configuring PowerShell profile...
 
 REM Get PowerShell profile path and update it
-powershell -NoProfile -Command "$profilePath = $PROFILE; $loadLine = '. \""%INSTALL_DIR%\%PS_PROFILE_SCRIPT%\"\"'; if (-not (Test-Path $profilePath)) { New-Item -ItemType File -Path $profilePath -Force | Out-Null; Write-Host '       Created new profile: ' -NoNewline; Write-Host $profilePath }; $content = Get-Content $profilePath -Raw -ErrorAction SilentlyContinue; if ($content -and $content.Contains('kube-profile.ps1')) { Write-Host '       Profile already contains kube-aliases reference' } else { Add-Content -Path $profilePath -Value \"`n# Load Kubernetes aliases`n$loadLine\"; Write-Host '       Updated profile: ' -NoNewline; Write-Host $profilePath }"
+powershell -NoProfile -Command "$profilePath = $PROFILE; $loadLine = '. ''%INSTALL_DIR%\%PS_PROFILE_SCRIPT%'''; if (-not (Test-Path $profilePath)) { New-Item -ItemType File -Path $profilePath -Force | Out-Null; Write-Host '       Created new profile: ' -NoNewline; Write-Host $profilePath }; $content = Get-Content $profilePath -Raw -ErrorAction SilentlyContinue; if ($content -and $content.Contains($loadLine)) { Write-Host '       Profile already contains kube-aliases reference' } else { if ($content -and $content.Contains('kube-profile.ps1')) { $content = [regex]::Replace($content, '(?m)^# Load Kubernetes aliases\r?\n', ''); $content = [regex]::Replace($content, '(?m)^\s*\.\s+[\'\"].*kube-profile\.ps1[\'\"]*\s*\r?\n?', ''); [System.IO.File]::WriteAllText($profilePath, $content.TrimEnd()) }; Add-Content -Path $profilePath -Value \"`n# Load Kubernetes aliases`n$loadLine\"; Write-Host '       Updated profile: ' -NoNewline; Write-Host $profilePath }"
 
 echo.
 
